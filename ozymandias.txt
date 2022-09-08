@@ -1,0 +1,8 @@
+"ozymandias"
+{
+	"base"			"base"
+	"title"			"Ozymandias Framework"
+	"category"		"roleplay"
+	"maps"			"^rp_"
+	"menusystem"	"1"
+}
