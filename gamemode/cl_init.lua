@@ -1,4 +1,5 @@
-DEFINE_BASECLASS( "gamemode_base" )
+
+DeriveGamemode("sandbox")
 
 INDICE_PADDING = (0.075)
 
