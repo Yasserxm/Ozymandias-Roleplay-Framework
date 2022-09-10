@@ -1,6 +1,6 @@
 "ozymandias"
 {
-	"base"			"base"
+	"base"			"sandbox"
 	"title"			"Ozymandias Framework"
 	"category"		"roleplay"
 	"maps"			"^rp_"
