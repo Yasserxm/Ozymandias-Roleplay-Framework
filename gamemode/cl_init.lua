@@ -1,3 +1,4 @@
-DEFINE_BASECLASS( "gamemode_base" )
+
+DEFINE_BASECLASS("gamemode_base")
 
 include("shared.lua")
