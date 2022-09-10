@@ -54,7 +54,7 @@ function PANEL:Expand()
 	self:CreateAnimation(5, {
 		index 	= 1,
 		target 	= {self.tamanhoDoQuadrado = 1},
-		easing 	= "inCubic",
+		easing 	= "inCubic"
 	})
 end
 
