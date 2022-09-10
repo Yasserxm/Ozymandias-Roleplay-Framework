@@ -2,7 +2,7 @@
 
 
 -- Including all the features made for Sandbox gamemode
-DeriveGamemode("sandbox")
+DEFINE_BASECLASS("gamemode_base")
 
 function util.Include(fileName, state)
 	if (state == "shared" or string.find(fileName, "sh_")) then
