@@ -371,3 +371,5 @@ function tween.new(duration, subject, target, easing)
     clock     = 0
   }, Tween_mt)
 end
+
+util.tween = tween

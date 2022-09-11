@@ -1,0 +1,9 @@
+"UnlitGeneric"
+{
+	"$Basetexture" "vgui/ozymandias_background"
+	"$Translucent"		1
+	"$Ignorez"			1
+	"$Vertexcolor" 		1
+	"$Vertexalpha" 		1
+	"$Nolod" 			1
+}
