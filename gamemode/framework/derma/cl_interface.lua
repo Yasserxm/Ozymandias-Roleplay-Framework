@@ -8,7 +8,7 @@ function PANEL:Init()
 	self:MakePopup(true)
 	self:SetMouseInputEnabled(false)
 	self.isAnimating   = true
-	self.animationTime = 2
+	self.animationTime = 1
 
 	self:SetSize(
 		LARGURA_DA_TELA,
@@ -29,6 +29,13 @@ function PANEL:Init()
 		self:SetMouseInputEnabled(true)
 		self.isAnimating = false
 	end)
+
+    buttonExit = self:Add("menuButton")
+    buttonExit:SetSize(LARGURA_DA_TELA / 10, ALTURA_DA_TELA / 16)
+    buttonExit:Center()
+    buttonExit.DoClick = function()
+        self:Remove()
+    end
 end
 
 function PANEL:Paint()    
@@ -41,3 +48,42 @@ vgui.Register("mainMenu", PANEL, "DPanel")
 concommand.Add("mainMenu", function()
 	vgui.Create("mainMenu")
 end)
+
+
+local PANEL = {}
+
+function PANEL:Init()
+    self.strokeSize   = (ScreenScale(4))
+    self.roundness    = (0)
+
+    self:SetText("CANCELAR")
+    self:SetFont("OzymandiasButtonFont")
+
+    self:SetTextColor(BRANCO_ABSOLUTO)
+end
+
+function PANEL:OnCursorEntered()
+    self:BeWider(2, 20, "outCubic")
+end
+
+function PANEL:OnCursorExited()
+    self:BeWider(1, 0, "outQuint")
+end
+
+function PANEL:Paint(w, h)
+    draw.RoundedBox(ScreenScale(0) + self.roundness,
+    self.strokeSize / 2,        self.strokeSize / 2,
+    w - self.strokeSize,        h - self.strokeSize,
+    PRETO_ABSOLUTO)
+end
+
+function PANEL:BeWider(length, newBorder, insertedEasing)
+	self:CreateAnimation(length, {
+		target = {
+			roundness = ScreenScale(newBorder)
+		},
+		easing = insertedEasing
+	})
+end
+
+vgui.Register("menuButton", PANEL, "DButton")

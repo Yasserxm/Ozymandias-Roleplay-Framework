@@ -1,4 +1,3 @@
-
 -- Including all the features made for base gamemode
 DEFINE_BASECLASS("gamemode_base")
 

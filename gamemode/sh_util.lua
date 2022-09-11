@@ -22,6 +22,7 @@ BRANCO_ABSOLUTO = Color( 255, 255, 255 )
 PRETO_ABSOLUTO 	= Color( 000, 000, 000 )
 AMARELO_BOGA 	= Color( 255, 251, 019 )
 MARROM_BARBOSA 	= Color( 171, 158, 079 )
+COR_INVISIVEL	= Color( 000, 000, 000, 000)
 
 --[[
 	Palhetas 	de 	 cores
@@ -63,3 +64,4 @@ end
 
 --Somente inclusões abaixo
 util.IncludeDir("framework/derma")
+util.IncludeDir("framework/library")
