@@ -1,7 +1,7 @@
 --[[
 	Criação das globais utilizadas
 	pela interface  da  framework.
-  ]]
+--]]
 
 if (CLIENT) then
 	INDICE_PADDING = (0.05)
@@ -16,7 +16,7 @@ end
 --[[
 	Palhetas 	de	 cores 
 	standard do Ozymandias.
-  ]]
+--]]
 
 BRANCO_ABSOLUTO = Color( 255, 255, 255 )
 PRETO_ABSOLUTO 	= Color( 000, 000, 000 )
@@ -27,7 +27,7 @@ COR_INVISIVEL	= Color( 000, 000, 000, 000)
 --[[
 	Palhetas 	de 	 cores
 	standard do Protótpipo.
-]]
+--]]
 
 VERMELHO_ERRO 	= Color( 209, 038, 038 )
 VERMELHO_SOMBRA = Color( 133, 063, 063	)
@@ -37,7 +37,7 @@ VERMELHO_SOMBRA = Color( 133, 063, 063	)
 	Funções utilizadas para
 	incluir arquivos dentro
 	da Framework.
-]]
+--]]
 
 function util.Include(fileName, state)
 	if (state == "shared" or string.find(fileName, "sh_")) then
@@ -65,3 +65,9 @@ end
 --Somente inclusões abaixo
 util.IncludeDir("framework/derma")
 util.IncludeDir("framework/library")
+
+function GM:PostGamemodeLoaded()
+	if (CLIENT) then
+		vgui.Create("preMenu")
+	end
+end
