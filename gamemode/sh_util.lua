@@ -68,6 +68,6 @@ util.IncludeDir("framework/library")
 
 function GM:PostGamemodeLoaded()
 	if (CLIENT) then
-		vgui.Create("preMenu")
+		vgui.Create("preMenuLoading")
 	end
 end

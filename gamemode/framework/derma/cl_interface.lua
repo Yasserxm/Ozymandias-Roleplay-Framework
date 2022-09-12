@@ -1,12 +1,115 @@
--- TODO: Quando os painéis foram removidos, remover também os timers.
+PAINEIS_PARA_CARREGAR = {"mainMenu", "preMenu", "menuButton", "titleLabel"}
 
 local PANEL = {}
 
---[[
 function PANEL:OnKeyCodePressed()
 	self:Remove()
 end
-]]
+
+function PANEL:Init()
+    self:MakePopup(true)
+    self:SetMouseInputEnabled(false)
+    
+    self:SetSize(
+		LARGURA_DA_TELA,
+		ALTURA_DA_TELA
+	)
+
+    self.fadeAlpha = 0
+
+    timer.Create("OzymandiasLoading", 2, 1, function()
+        for k, v in pairs(PAINEIS_PARA_CARREGAR) do
+            self.loadedPanel = self:Add(v)
+            self.loadedPanel:Remove()
+        end
+        LocalPlayer():ConCommand("stopsound")
+
+        self.blackCurtain = self:Add("DPanel")
+        self.blackCurtain:SetSize(LARGURA_DA_TELA, ALTURA_DA_TELA)
+        self.blackCurtain.Paint = function(this, width, height)
+            surface.SetDrawColor(PRETO_ABSOLUTO)
+            surface.DrawRect(0, 0, width, height)
+        end
+
+        self.subTitle = self:Add("titleLabel")
+        self.subTitle:SetMouseInputEnabled(false)
+        self.subTitle:SetFont("OzymandiasBigLabelFont")
+        self.subTitle:SetText("[Atenção, carregando interface] ")
+        self.subTitle:CenterVertical(.65)
+        self.subTitle:SetExpensiveShadow(ScreenScale(.25), BRANCO_ABSOLUTO)
+        self.subTitle.alwaysCentered = true
+
+        self.loadingIcon = self:Add("DPanel")
+        self.loadingIcon:SetSize(LARGURA_DA_TELA / 6, LARGURA_DA_TELA / 6)
+        self.loadingIcon:Center()
+        self.loadingIcon.Paint = function(this, width, height)
+            surface.SetDrawColor(BRANCO_ABSOLUTO)
+            surface.SetTexture(surface.GetTextureID("vgui/ozymandias_loading_icon"))
+            surface.DrawTexturedRectRotated(width / 2, height / 2,
+            width, height, (CurTime() % 360) * 200)
+        end
+
+        self.subTitle.AfterWriting = function()
+            self.subTitle:Remove()
+            self.blackCurtain:Remove()
+
+            self.subTitle = self:Add("titleLabel")
+            self.subTitle:SetMouseInputEnabled(false)
+            self.subTitle:SetFont("OzymandiasBigLabelFont")
+            self.subTitle:SetText("[Interface carregada] ")
+            self.subTitle:CenterVertical(.65)
+            self.subTitle:SetExpensiveShadow(ScreenScale(.25), BRANCO_ABSOLUTO)
+            self.subTitle.alwaysCentered = true
+
+            self.subTitle.AfterWriting = function()
+                self:Remove()
+            end
+
+            self.blackCurtain = self:Add("DPanel")
+            self.blackCurtain:SetSize(ScreenScale(100), ScreenScale(100))
+            self.blackCurtain.Paint = function(this, width, height)
+                surface.SetDrawColor(ColorAlpha(PRETO_ABSOLUTO, self.fadeAlpha))
+                surface.DrawRect(0, 0, width, height)
+            end
+            
+            self:FadeOut(.1, "outCubic")
+        end
+    end)
+end
+
+function PANEL:Paint(w, h)
+    surface.SetDrawColor(PRETO_ABSOLUTO)
+    surface.DrawRect(0, 0, w, h)
+end
+
+function PANEL:FadeOut(length, insertedEasing)
+	self:CreateAnimation(length, {
+        index  = 1,
+		target = {
+			fadeAlpha = 255
+		},
+		easing = insertedEasing
+	})
+end
+
+function PANEL:OnRemove()
+    timer.Remove("OzymandiasLoading")
+    vgui.Create("preMenu")
+end
+
+vgui.Register("preMenuLoading", PANEL, "DPanel")
+
+concommand.Add("preMenuLoading", function()
+	vgui.Create("preMenuLoading")
+end)
+
+-- TODO: Quando os painéis foram removidos, remover também os timers.
+local PANEL = {}
+--[[
+    function PANEL:OnKeyCodePressed()
+        self:Remove()
+    end
+--]]
 
 function PANEL:Init()
     self:MakePopup(true)
@@ -32,7 +135,7 @@ function PANEL:Init()
         self.buttonExit:CenterHorizontal()
         self.buttonExit.startFaded = true
         self.buttonExit.AfterClick = function()
-            self:StopMusicAndRemove(1, "outQuint")
+            self:StopMusicAndRemove(1, "outCubic")
         end
         self.buttonExit.invertColor = true
 
@@ -56,9 +159,11 @@ function PANEL:PlayMusic()
 	sound.PlayFile(path, "noplay", function(channel, error, errorMessage)
         if IsValid(channel) then
             channel:Play()
-            channel:SetVolume(self.volume)
+            channel:SetVolume(self.volume or 0)
 
-            self.channel = channel
+            if IsValid(self) then
+                self.channel = channel
+            end
         else
             print("Erro, o áudio não pode ser executado", error, errorMessage)
         end
@@ -109,13 +214,14 @@ concommand.Add("preMenu", function()
 	vgui.Create("preMenu")
 end)
 
+
 local PANEL = {}
 
 --[[
-function PANEL:OnKeyCodePressed()
-	self:Remove()
-end
-]]
+    function PANEL:OnKeyCodePressed()
+        self:Remove()
+    end
+--]]
 
 function PANEL:Init()
 	self:MakePopup(true)
@@ -203,9 +309,9 @@ end
 
 function PANEL:Think()
     if self:GetGradient() then
-        self:ChangeGradient(1, 255, "outQuint")
+        self:ChangeGradient(1, 255, "outCubic")
     else
-        self:ChangeGradient(1, 0, "outQuint")
+        self:ChangeGradient(1, 0, "outCubic")
     end
 end
 
@@ -264,6 +370,8 @@ function PANEL:Init()
     self.clickSound = ("buttons/button3.wav")
     self.enterSound = ("buttons/button16.wav")
     self.exitSound  = ("buttons/lightswitch2.wav")
+    
+    self.timerName  = ("OzymandiasButton" .. math.random(1, 9999) + self:CursorPos())
 
     self:SetText("Cancelar")
     self:SetFont("OzymandiasButtonFont")
@@ -279,7 +387,7 @@ function PANEL:Init()
 end
 
 function PANEL:PostInit(initTime)
-    timer.Create("OzymandiasButton" .. math.random(1, 9999) + self:CursorPos(), initTime, 1, function()
+    timer.Create(self.timerName, initTime, 1, function()
         if self.invertColor then
             local oldPrimaryColor   = self.primaryColor
             local oldSecundaryColor = self.secundaryColor
@@ -299,7 +407,7 @@ function PANEL:PostInit(initTime)
 end
 
 function PANEL:OnCursorEntered()
-    self:BeWider(2, 20, "outCubic")
+    self:BeRounder(2, 20, "outCubic")
 
     if self.parent.isMainMenu then
         self.parent:SetGradient(true)
@@ -309,7 +417,7 @@ function PANEL:OnCursorEntered()
 end
 
 function PANEL:OnCursorExited()
-    self:BeWider(1, 0, "outQuint")
+    self:BeRounder(1, 0, "outCubic")
 
     if self.parent.isMainMenu then
         self.parent:SetGradient(false)
@@ -355,7 +463,7 @@ end
 function PANEL:AfterClick()
 end
 
-function PANEL:BeWider(length, newBorder, insertedEasing)
+function PANEL:BeRounder(length, newBorder, insertedEasing)
 	self:CreateAnimation(length, {
         index  = 1,
 		target = {
@@ -379,7 +487,9 @@ function PANEL:Fadein(length, newAlpha, insertedEasing)
 	})
 end
 
-
+function PANEL:OnRemove()
+    timer.Remove(self.timerName)
+end
 
 vgui.Register("menuButton", PANEL, "DButton")
 
@@ -404,7 +514,12 @@ function PANEL:Init()
     self.useSoundFX     = false
     self.ready          = false
     self.isAnimating    = true
+    self.invertColor    = false
     self.soundFX        = ("ui/buttonrollover.wav")
+    self.timerName      = ("OzymandiasLabel" .. math.random(1, 9999) + self:CursorPos())
+
+    self.primaryColor   = PRETO_ABSOLUTO
+    self.secundaryColor = BRANCO_ABSOLUTO
 
     self:SetFont("OzymandiasSmallLabelFont")
     self:SetColor(COR_INVISIVEL)
@@ -414,15 +529,25 @@ function PANEL:Init()
 end
 
 function PANEL:PostInit(initTime)
-    timer.Create("OzymandiasLabel" .. math.random(1, 9999) + self:CursorPos(), initTime, 1, function()
+    timer.Create(self.timerName, initTime, 1, function()
+        if self.invertColor then
+            local oldPrimaryColor   = self.primaryColor
+            local oldSecundaryColor = self.secundaryColor
+
+            self.primaryColor   = oldSecundaryColor
+            self.secundaryColor = oldPrimaryColor
+
+            self:SetTextColor(self.secundaryColor)
+        end
+
         self.textChar = (0)
         self.lastChar = (utf8.len(self:GetText()))
         self.textFull = (self:GetText())
 
-        self:AutoWrite(self.animSpeed, self.lastChar, "outQuint")
+        self:AutoWrite(self.animSpeed, self.lastChar, "outCubic")
 
         if self:GetColor() == COR_INVISIVEL then
-            self:SetColor(BRANCO_ABSOLUTO)
+            self:SetColor(self.secundaryColor)
         end
 
         self.ready = true
@@ -451,7 +576,7 @@ end
 
 function PANEL:Paint()
     if self.useBackground then
-        draw.RoundedBox(0, 0, 0, self:GetWide(), self:GetTall(), PRETO_ABSOLUTO)
+        draw.RoundedBox(0, 0, 0, self:GetWide(), self:GetTall(), self.primaryColor)
     end
 end
 
@@ -474,6 +599,10 @@ function PANEL:AutoWrite(length, newChar, insertedEasing)
 end
 
 function PANEL:AfterWriting()
+end
+
+function PANEL:OnRemove()
+    timer.Remove(self.timerName)
 end
 
 vgui.Register("titleLabel", PANEL, "DLabel")
